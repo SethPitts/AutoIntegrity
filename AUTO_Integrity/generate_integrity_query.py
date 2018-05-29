@@ -9,6 +9,7 @@ file_name_df = pd.read_excel('CTN_0067_Integrity_Checks.xlsx', sheet_name='FILE_
 temp_var_df = pd.read_excel('CTN_0067_Integrity_Checks.xlsx', sheet_name='TEMP_VARS')
 checks_df = pd.read_excel('CTN_0067_Integrity_Checks.xlsx', sheet_name='CHECKS')
 
+integrity_tracker_df = pd.read_excel('CTN-0067 Integrity Tracker.xlsx', sheet_name='0067 Specific Checks')
 # Get Checks present in template
 checks_in_template = checks_in_template_df.CHECK_NAME
 for check_name in checks_in_template:
@@ -19,6 +20,7 @@ for check_name in checks_in_template:
             comment_template = "COMMENT  {}\n"
             for comment in comments:
                 req_file.write(comment_template.format(comment))
+            # TODO: Can remove this and make comment based off of forms in req
 
             # write new line
             req_file.write("\n")
@@ -82,7 +84,3 @@ for check_name in checks_in_template:
                 code_template = "  {}\n\n"
                 check_code = var_info.loc['CODE']
                 req_file.write(code_template.format(check_code))
-
-
-
-
