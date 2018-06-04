@@ -3,8 +3,14 @@ import pandas as pd
 from text_formatter import format_by_charater_length
 
 
-def Create_Req_Files_From_Tracker():
-    integrity_tracker_df = pd.read_excel('CTN-0067 Integrity Tracker2.xlsx', sheet_name='0067 Specific Checks')
+def Create_Req_Files_From_Tracker(file_path, sheet_name):
+    """
+    Creates intetrity req files from the excel file
+    :param file_path: pathway to excel file with the req information
+    :param sheet_name: sheet in the excel file that contains the req information
+    :return:
+    """
+    integrity_tracker_df = pd.read_excel(file_path, sheet_name)
     # Create DF of only reqs that are in the status []
     active_integrity_tracker_df = integrity_tracker_df[integrity_tracker_df.Status == 'Ready For Review']
     # Get reqs present in template`
@@ -45,13 +51,13 @@ def Create_Req_Files_From_Tracker():
             # Write FILE-NAME to req file
             file_name_template = "FILE-{}{}{}\n"
             for form_num, form in enumerate(forms_in_req):
-                file_num, file_name = form_num + 1, form
+                file_num, file_path = form_num + 1, form
                 key_fields = forms_in_req[form]
-                padded_spaces_1 = " " * (10 - len(file_name))  # Used to place text at correct column line
+                padded_spaces_1 = " " * (10 - len(file_path))  # Used to place text at correct column line
                 padded_spaces_2 = " " * (4 - len(str(file_num)))
                 key_fields = key_fields.replace(",", " ")
                 req_file.write(
-                    file_name_template.format(str(file_num) + padded_spaces_2, file_name + padded_spaces_1, key_fields))
+                    file_name_template.format(str(file_num) + padded_spaces_2, file_path + padded_spaces_1, key_fields))
 
             # New Line
             req_file.write('\n')
@@ -70,11 +76,11 @@ def Create_Req_Files_From_Tracker():
             req_file.write("TEMPEND\n\n")
 
             # Write CHECKS to file
-            filtered_checks_df = current_req_df[
+            checks_df = current_req_df[
                 (current_req_df.File_Name == req_file_name)]  # Filter data frame by check
             check_line1_template = "{} {}{} {} {}{}{}\n"
 
-            for idx, var_info in filtered_checks_df.iterrows():
+            for idx, var_info in checks_df.iterrows():
                 edit_check_def = var_info.loc['EDIT_CHECK_DEFINITION_LINE']
                 edit_check_name = var_info.loc['Check_Name']
                 legal_illegal = var_info.loc['LEGAL_ILLEGAL']
@@ -95,4 +101,9 @@ def Create_Req_Files_From_Tracker():
                 req_file.write(code_template.format(format_by_charater_length(60, check_code)))
 
 
-Create_Req_Files_From_Tracker()
+def main():
+    Create_Req_Files_From_Tracker('AUTO_Integrity/CTN-0068 Integrity_Example.xlsx', 'Checks')
+
+
+if __name__ == '__main__':
+    main()
